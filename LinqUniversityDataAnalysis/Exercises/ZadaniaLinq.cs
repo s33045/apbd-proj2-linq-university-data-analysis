@@ -134,7 +134,8 @@ public sealed class ZadaniaLinq
     {
         return DaneUczelni.Studenci
             .Select(student => student.Miasto)
-            .Distinct();
+            .Distinct()
+            .OrderBy(miasto => miasto);
     }
 
     /// <summary>
