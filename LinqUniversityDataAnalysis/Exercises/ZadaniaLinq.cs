@@ -148,7 +148,11 @@ public sealed class ZadaniaLinq
     /// </summary>
     public IEnumerable<string> Zadanie09_TrzyNajnowszeZapisy()
     {
-        throw Niezaimplementowano(nameof(Zadanie09_TrzyNajnowszeZapisy));
+        return DaneUczelni.Zapisy
+            .OrderByDescending(zapis => zapis.DataZapisu)
+            .Take(3)
+            .Select(zapis =>
+                $"{zapis.DataZapisu:dd-MM-yyyy} | studentId: {zapis.StudentId} | przedmiotId: {zapis.PrzedmiotId}");
     }
 
     /// <summary>
@@ -163,7 +167,14 @@ public sealed class ZadaniaLinq
     /// </summary>
     public IEnumerable<string> Zadanie10_DrugaStronaPrzedmiotow()
     {
-        throw Niezaimplementowano(nameof(Zadanie10_DrugaStronaPrzedmiotow));
+        var pageSize = 2;
+        var pageNumber = 2;
+
+        return DaneUczelni.Przedmioty
+            .OrderBy(przedmiot => przedmiot.Nazwa)
+            .Skip((pageNumber - 1) * pageSize)
+            .Take(pageSize)
+            .Select(przedmiot => $"{przedmiot.Nazwa} | {przedmiot.Kategoria}");
     }
 
     /// <summary>
@@ -177,7 +188,13 @@ public sealed class ZadaniaLinq
     /// </summary>
     public IEnumerable<string> Zadanie11_PolaczStudentowIZapisy()
     {
-        throw Niezaimplementowano(nameof(Zadanie11_PolaczStudentowIZapisy));
+        return DaneUczelni.Studenci
+            .Join(
+                DaneUczelni.Zapisy,
+                student => student.Id,
+                zapis => zapis.StudentId,
+                (student, zapis) => $"{student.Imie} {student.Nazwisko} | {zapis.DataZapisu:dd-MM-yyyy}"
+            );
     }
 
     /// <summary>
@@ -192,7 +209,16 @@ public sealed class ZadaniaLinq
     /// </summary>
     public IEnumerable<string> Zadanie12_ParyStudentPrzedmiot()
     {
-        throw Niezaimplementowano(nameof(Zadanie12_ParyStudentPrzedmiot));
+        return DaneUczelni.Studenci
+            .SelectMany(student => DaneUczelni.Zapisy
+                .Where(zapis => zapis.StudentId == student.Id)
+                .Join(
+                    DaneUczelni.Przedmioty,
+                    zapis => zapis.PrzedmiotId,
+                    przedmiot => przedmiot.Id,
+                    (_, przedmiot) => $"{student.Imie} {student.Nazwisko} | {przedmiot.Nazwa}"
+                )
+            );
     }
 
     /// <summary>
