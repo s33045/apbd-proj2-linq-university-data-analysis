@@ -25,9 +25,12 @@ var opcje = new List<(string Klucz, string Opis, Func<IEnumerable<string>> Akcja
     ("14", "Średnia ocena na przedmiot", zadania.Zadanie14_SredniaOcenaNaPrzedmiot),
     ("15", "Prowadzący i liczba ich przedmiotów", zadania.Zadanie15_ProwadzacyILiczbaPrzedmiotow),
     ("16", "Najwyższa ocena każdego studenta", zadania.Zadanie16_NajwyzszaOcenaKazdegoStudenta),
-    ("17", "Wyzwanie: studenci z więcej niż jednym aktywnym przedmiotem", zadania.Wyzwanie01_StudenciZWiecejNizJednymAktywnymPrzedmiotem),
-    ("18", "Wyzwanie: przedmioty startujące w kwietniu bez ocen końcowych", zadania.Wyzwanie02_PrzedmiotyStartujaceWKwietniuBezOcenKoncowych),
-    ("19", "Wyzwanie: prowadzący i średnia ocen na ich przedmiotach", zadania.Wyzwanie03_ProwadzacyISredniaOcenNaIchPrzedmiotach),
+    ("17", "Wyzwanie: studenci z więcej niż jednym aktywnym przedmiotem",
+        zadania.Wyzwanie01_StudenciZWiecejNizJednymAktywnymPrzedmiotem),
+    ("18", "Wyzwanie: przedmioty startujące w kwietniu bez ocen końcowych",
+        zadania.Wyzwanie02_PrzedmiotyStartujaceWKwietniuBezOcenKoncowych),
+    ("19", "Wyzwanie: prowadzący i średnia ocen na ich przedmiotach",
+        zadania.Wyzwanie03_ProwadzacyISredniaOcenNaIchPrzedmiotach),
     ("20", "Wyzwanie: miasta i liczba aktywnych zapisów", zadania.Wyzwanie04_MiastaILiczbaAktywnychZapisow)
 };
 
@@ -42,19 +45,13 @@ while (true)
     Console.WriteLine("Jeżeli metoda nie została jeszcze uzupełniona, aplikacja wyświetli komunikat TODO.");
     Console.WriteLine();
 
-    foreach (var opcja in opcje)
-    {
-        Console.WriteLine($"{opcja.Klucz,2}. {opcja.Opis}");
-    }
+    foreach (var opcja in opcje) Console.WriteLine($"{opcja.Klucz,2}. {opcja.Opis}");
 
     Console.WriteLine();
     Console.Write("Wpisz numer zadania lub X, aby zakończyć: ");
     var wybor = Console.ReadLine()?.Trim();
 
-    if (string.Equals(wybor, "x", StringComparison.OrdinalIgnoreCase))
-    {
-        break;
-    }
+    if (string.Equals(wybor, "x", StringComparison.OrdinalIgnoreCase)) break;
 
     if (wybor is null || !mapaOpcji.TryGetValue(wybor, out var wybranaOpcja))
     {
@@ -97,8 +94,5 @@ static void WyswietlWynik(IEnumerable<string> wynik)
         return;
     }
 
-    for (var i = 0; i < wiersze.Count; i++)
-    {
-        Console.WriteLine($"{i + 1,2}. {wiersze[i]}");
-    }
+    for (var i = 0; i < wiersze.Count; i++) Console.WriteLine($"{i + 1,2}. {wiersze[i]}");
 }
