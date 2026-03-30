@@ -83,7 +83,10 @@ public sealed class ZadaniaLinq
     /// </summary>
     public IEnumerable<string> Zadanie05_CzyIstniejeNieaktywneZapisanie()
     {
-        throw Niezaimplementowano(nameof(Zadanie05_CzyIstniejeNieaktywneZapisanie));
+        var anyInactiveSave = DaneUczelni.Zapisy
+            .Any(zapis => !zapis.CzyAktywny);
+
+        return [$"Czy istnieje nieaktywny zapis: {(anyInactiveSave ? "Tak" : "Nie")}"];
     }
 
     /// <summary>
@@ -97,7 +100,10 @@ public sealed class ZadaniaLinq
     /// </summary>
     public IEnumerable<string> Zadanie06_CzyWszyscyProwadzacyMajaKatedre()
     {
-        throw Niezaimplementowano(nameof(Zadanie06_CzyWszyscyProwadzacyMajaKatedre));
+        var doesEveryoneHaveCathedral = DaneUczelni.Prowadzacy
+            .All(prowadzacy => !string.IsNullOrWhiteSpace(prowadzacy.Katedra));
+
+        return [$"Czy wszyscy prowadzący mają katedrę: {(doesEveryoneHaveCathedral ? "Tak" : "Nie")}"];
     }
 
     /// <summary>
@@ -110,7 +116,10 @@ public sealed class ZadaniaLinq
     /// </summary>
     public IEnumerable<string> Zadanie07_LiczbaAktywnychZapisow()
     {
-        throw Niezaimplementowano(nameof(Zadanie07_LiczbaAktywnychZapisow));
+        var activeSavesCount = DaneUczelni.Zapisy
+            .Count(zapis => zapis.CzyAktywny);
+
+        return [$"Liczba aktywnych zapisów: {activeSavesCount}"];
     }
 
     /// <summary>
@@ -123,7 +132,9 @@ public sealed class ZadaniaLinq
     /// </summary>
     public IEnumerable<string> Zadanie08_UnikalneMiastaStudentow()
     {
-        throw Niezaimplementowano(nameof(Zadanie08_UnikalneMiastaStudentow));
+        return DaneUczelni.Studenci
+            .Select(student => student.Miasto)
+            .Distinct();
     }
 
     /// <summary>
