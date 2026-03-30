@@ -63,7 +63,7 @@ public sealed class ZadaniaLinq
     public IEnumerable<string> Zadanie04_PierwszyPrzedmiotAnalityczny()
     {
         var subject = DaneUczelni.Przedmioty
-            .FirstOrDefault(przedmiot => przedmiot.Kategoria == "Analytics");
+            .FirstOrDefault(subject => subject.Kategoria == "Analytics");
 
         if (subject == null) return ["Brak przedmiotu z kategorii Analytics."];
 
@@ -83,10 +83,10 @@ public sealed class ZadaniaLinq
     /// </summary>
     public IEnumerable<string> Zadanie05_CzyIstniejeNieaktywneZapisanie()
     {
-        var anyInactiveSave = DaneUczelni.Zapisy
-            .Any(zapis => !zapis.CzyAktywny);
+        var anyInactiveEnrollment = DaneUczelni.Zapisy
+            .Any(enrollment => !enrollment.CzyAktywny);
 
-        return [$"Czy istnieje nieaktywny zapis: {(anyInactiveSave ? "Tak" : "Nie")}"];
+        return [$"Czy istnieje nieaktywny zapis: {(anyInactiveEnrollment ? "Tak" : "Nie")}"];
     }
 
     /// <summary>
@@ -101,7 +101,7 @@ public sealed class ZadaniaLinq
     public IEnumerable<string> Zadanie06_CzyWszyscyProwadzacyMajaKatedre()
     {
         var doesEveryoneHaveCathedral = DaneUczelni.Prowadzacy
-            .All(prowadzacy => !string.IsNullOrWhiteSpace(prowadzacy.Katedra));
+            .All(lecturer => !string.IsNullOrWhiteSpace(lecturer.Katedra));
 
         return [$"Czy wszyscy prowadzący mają katedrę: {(doesEveryoneHaveCathedral ? "Tak" : "Nie")}"];
     }
@@ -116,10 +116,10 @@ public sealed class ZadaniaLinq
     /// </summary>
     public IEnumerable<string> Zadanie07_LiczbaAktywnychZapisow()
     {
-        var activeSavesCount = DaneUczelni.Zapisy
-            .Count(zapis => zapis.CzyAktywny);
+        var activeEnrollmentsCount = DaneUczelni.Zapisy
+            .Count(enrollment => enrollment.CzyAktywny);
 
-        return [$"Liczba aktywnych zapisów: {activeSavesCount}"];
+        return [$"Liczba aktywnych zapisów: {activeEnrollmentsCount}"];
     }
 
     /// <summary>
@@ -135,7 +135,7 @@ public sealed class ZadaniaLinq
         return DaneUczelni.Studenci
             .Select(student => student.Miasto)
             .Distinct()
-            .OrderBy(miasto => miasto);
+            .OrderBy(city => city);
     }
 
     /// <summary>
@@ -150,10 +150,10 @@ public sealed class ZadaniaLinq
     public IEnumerable<string> Zadanie09_TrzyNajnowszeZapisy()
     {
         return DaneUczelni.Zapisy
-            .OrderByDescending(zapis => zapis.DataZapisu)
+            .OrderByDescending(enrollment => enrollment.DataZapisu)
             .Take(3)
-            .Select(zapis =>
-                $"{zapis.DataZapisu:dd-MM-yyyy} | studentId: {zapis.StudentId} | przedmiotId: {zapis.PrzedmiotId}");
+            .Select(enrollment =>
+                $"{enrollment.DataZapisu:dd-MM-yyyy} | studentId: {enrollment.StudentId} | przedmiotId: {enrollment.PrzedmiotId}");
     }
 
     /// <summary>
@@ -172,10 +172,10 @@ public sealed class ZadaniaLinq
         var pageNumber = 2;
 
         return DaneUczelni.Przedmioty
-            .OrderBy(przedmiot => przedmiot.Nazwa)
+            .OrderBy(subject => subject.Nazwa)
             .Skip((pageNumber - 1) * pageSize)
             .Take(pageSize)
-            .Select(przedmiot => $"{przedmiot.Nazwa} | {przedmiot.Kategoria}");
+            .Select(subject => $"{subject.Nazwa} | {subject.Kategoria}");
     }
 
     /// <summary>
@@ -193,8 +193,8 @@ public sealed class ZadaniaLinq
             .Join(
                 DaneUczelni.Zapisy,
                 student => student.Id,
-                zapis => zapis.StudentId,
-                (student, zapis) => $"{student.Imie} {student.Nazwisko} | {zapis.DataZapisu:dd-MM-yyyy}"
+                enrollment => enrollment.StudentId,
+                (student, enrollment) => $"{student.Imie} {student.Nazwisko} | {enrollment.DataZapisu:dd-MM-yyyy}"
             );
     }
 
@@ -212,12 +212,12 @@ public sealed class ZadaniaLinq
     {
         return DaneUczelni.Studenci
             .SelectMany(student => DaneUczelni.Zapisy
-                .Where(zapis => zapis.StudentId == student.Id)
+                .Where(enrollment => enrollment.StudentId == student.Id)
                 .Join(
                     DaneUczelni.Przedmioty,
-                    zapis => zapis.PrzedmiotId,
-                    przedmiot => przedmiot.Id,
-                    (_, przedmiot) => $"{student.Imie} {student.Nazwisko} | {przedmiot.Nazwa}"
+                    enrollment => enrollment.PrzedmiotId,
+                    subject => subject.Id,
+                    (_, subject) => $"{student.Imie} {student.Nazwisko} | {subject.Nazwa}"
                 )
             );
     }
@@ -236,12 +236,12 @@ public sealed class ZadaniaLinq
         return DaneUczelni.Zapisy
             .Join(
                 DaneUczelni.Przedmioty,
-                zapis => zapis.PrzedmiotId,
-                przedmiot => przedmiot.Id,
-                (_, przedmiot) => przedmiot.Nazwa
+                enrollment => enrollment.PrzedmiotId,
+                subject => subject.Id,
+                (_, subject) => subject.Nazwa
             )
-            .GroupBy(nazwaPrzedmiotu => nazwaPrzedmiotu)
-            .Select(grupa => $"{grupa.Key} | liczba zapisów: {grupa.Count()}");
+            .GroupBy(subjectName => subjectName)
+            .Select(group => $"{group.Key} | liczba zapisów: {group.Count()}");
     }
 
     /// <summary>
@@ -258,15 +258,15 @@ public sealed class ZadaniaLinq
     public IEnumerable<string> Zadanie14_SredniaOcenaNaPrzedmiot()
     {
         return DaneUczelni.Zapisy
-            .Where(zapis => zapis.OcenaKoncowa.HasValue)
+            .Where(enrollment => enrollment.OcenaKoncowa.HasValue)
             .Join(
                 DaneUczelni.Przedmioty,
-                zapis => zapis.PrzedmiotId,
-                przedmiot => przedmiot.Id,
-                (zapis, przedmiot) => new { przedmiot.Nazwa, Ocena = zapis.OcenaKoncowa!.Value }
+                enrollment => enrollment.PrzedmiotId,
+                subject => subject.Id,
+                (enrollment, subject) => new { Name = subject.Nazwa, Grade = enrollment.OcenaKoncowa!.Value }
             )
-            .GroupBy(record => record.Nazwa)
-            .Select(group => $"{group.Key} | średnia: {group.Average(x => x.Ocena):0.00}");
+            .GroupBy(record => record.Name)
+            .Select(group => $"{group.Key} | średnia: {group.Average(x => x.Grade):0.00}");
     }
 
     /// <summary>
@@ -284,10 +284,10 @@ public sealed class ZadaniaLinq
         return DaneUczelni.Prowadzacy
             .GroupJoin(
                 DaneUczelni.Przedmioty,
-                prowadzacy => prowadzacy.Id,
-                przedmiot => przedmiot.ProwadzacyId,
-                (prowadzacy, przedmioty) =>
-                    $"{prowadzacy.Imie} {prowadzacy.Nazwisko} | liczba przedmiotów: {przedmioty.Count()}");
+                lecturer => lecturer.Id,
+                subject => subject.ProwadzacyId,
+                (lecturer, subjects) =>
+                    $"{lecturer.Imie} {lecturer.Nazwisko} | liczba przedmiotów: {subjects.Count()}");
     }
 
     /// <summary>
@@ -305,13 +305,14 @@ public sealed class ZadaniaLinq
     {
         return DaneUczelni.Studenci
             .Join(
-                DaneUczelni.Zapisy.Where(zapis => zapis.OcenaKoncowa.HasValue),
+                DaneUczelni.Zapisy.Where(enrollment => enrollment.OcenaKoncowa.HasValue),
                 student => student.Id,
-                zapis => zapis.StudentId,
-                (student, zapis) => new { student.Imie, student.Nazwisko, Ocena = zapis.OcenaKoncowa!.Value }
+                enrollment => enrollment.StudentId,
+                (student, enrollment) => new
+                    { Name = student.Imie, Surname = student.Nazwisko, Grade = enrollment.OcenaKoncowa!.Value }
             )
-            .GroupBy(record => new { record.Imie, record.Nazwisko })
-            .Select(group => $"{group.Key.Imie} {group.Key.Nazwisko} | najwyższa ocena: {group.Max(x => x.Ocena):0.0}");
+            .GroupBy(record => new { record.Name, record.Surname })
+            .Select(group => $"{group.Key.Name} {group.Key.Surname} | najwyższa ocena: {group.Max(x => x.Grade):0.0}");
     }
 
     /// <summary>
@@ -330,14 +331,14 @@ public sealed class ZadaniaLinq
     {
         return DaneUczelni.Studenci
             .Join(
-                DaneUczelni.Zapisy.Where(zapis => zapis.CzyAktywny),
+                DaneUczelni.Zapisy.Where(enrollment => enrollment.CzyAktywny),
                 student => student.Id,
-                zapis => zapis.StudentId,
-                (student, _) => new { student.Imie, student.Nazwisko }
+                enrollment => enrollment.StudentId,
+                (student, _) => new { Name = student.Imie, Surname = student.Nazwisko }
             )
-            .GroupBy(record => new { record.Imie, record.Nazwisko })
+            .GroupBy(record => new { record.Name, record.Surname })
             .Where(group => group.Count() > 1)
-            .Select(group => $"{group.Key.Imie} {group.Key.Nazwisko} | aktywne przedmioty {group.Count()}");
+            .Select(group => $"{group.Key.Name} {group.Key.Surname} | aktywne przedmioty {group.Count()}");
     }
 
     /// <summary>
@@ -354,24 +355,24 @@ public sealed class ZadaniaLinq
     public IEnumerable<string> Wyzwanie02_PrzedmiotyStartujaceWKwietniuBezOcenKoncowych()
     {
         return DaneUczelni.Przedmioty
-            .Where(przedmiot => przedmiot.DataStartu is { Year: 2026, Month: 4 })
+            .Where(subject => subject.DataStartu is { Year: 2026, Month: 4 })
             .GroupJoin(
                 DaneUczelni.Zapisy,
-                przedmiot => przedmiot.Id,
-                zapis => zapis.PrzedmiotId,
-                (przedmiot, zapisy) =>
+                subject => subject.Id,
+                enrollment => enrollment.PrzedmiotId,
+                (subject, enrollments) =>
                 {
-                    var listaZapisow = zapisy.ToArray();
+                    var enrollmentList = enrollments.ToArray();
 
                     return new
                     {
-                        przedmiot.Nazwa,
-                        HasAnyEnrollments = listaZapisow.Any(),
-                        AreAllGradesEmpty = listaZapisow.All(zapis => !zapis.OcenaKoncowa.HasValue)
+                        Name = subject.Nazwa,
+                        HasAnyEnrollments = enrollmentList.Any(),
+                        AreAllGradesEmpty = enrollmentList.All(zapis => !zapis.OcenaKoncowa.HasValue)
                     };
                 })
             .Where(record => record.HasAnyEnrollments && record.AreAllGradesEmpty)
-            .Select(record => record.Nazwa);
+            .Select(record => record.Name);
     }
 
     /// <summary>
@@ -389,20 +390,20 @@ public sealed class ZadaniaLinq
     public IEnumerable<string> Wyzwanie03_ProwadzacyISredniaOcenNaIchPrzedmiotach()
     {
         return DaneUczelni.Prowadzacy
-            .Select(prowadzacy =>
+            .Select(lecturer =>
                 {
                     var grades = DaneUczelni.Przedmioty
-                        .Where(przedmiot => przedmiot.ProwadzacyId == prowadzacy.Id)
+                        .Where(subject => subject.ProwadzacyId == lecturer.Id)
                         .Join(
-                            DaneUczelni.Zapisy.Where(zapis => zapis.OcenaKoncowa.HasValue),
-                            przedmiot => przedmiot.Id,
-                            zapis => zapis.PrzedmiotId,
-                            (_, zapis) => zapis.OcenaKoncowa!.Value)
+                            DaneUczelni.Zapisy.Where(enrollment => enrollment.OcenaKoncowa.HasValue),
+                            subject => subject.Id,
+                            enrollment => enrollment.PrzedmiotId,
+                            (_, enrollment) => enrollment.OcenaKoncowa!.Value)
                         .ToList();
 
                     return grades.Count == 0
-                        ? $"{prowadzacy.Imie} {prowadzacy.Nazwisko} | średnia ocen: brak ocen"
-                        : $"{prowadzacy.Imie} {prowadzacy.Nazwisko} | średnia ocen: {grades.Average():0.00}";
+                        ? $"{lecturer.Imie} {lecturer.Nazwisko} | średnia ocen: brak ocen"
+                        : $"{lecturer.Imie} {lecturer.Nazwisko} | średnia ocen: {grades.Average():0.00}";
                 }
             );
     }
@@ -423,12 +424,12 @@ public sealed class ZadaniaLinq
     {
         return DaneUczelni.Studenci
             .Join(
-                DaneUczelni.Zapisy.Where(zapis => zapis.CzyAktywny),
+                DaneUczelni.Zapisy.Where(enrollment => enrollment.CzyAktywny),
                 student => student.Id,
-                zapis => zapis.StudentId,
+                enrollment => enrollment.StudentId,
                 (student, _) => student.Miasto
             )
-            .GroupBy(miasto => miasto)
+            .GroupBy(city => city)
             .OrderByDescending(group => group.Count())
             .ThenBy(group => group.Key)
             .Select(group => $"{group.Key} | aktywne zapisy: {group.Count()}");
